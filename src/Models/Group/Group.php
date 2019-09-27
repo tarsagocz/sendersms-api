@@ -9,12 +9,18 @@ namespace Smswizz\Models\Group;
 use Carbon\Carbon;
 use Smswizz\Models\AbstractModel;
 use Smswizz\Models\Campaign\CampaignsTrait;
+use Smswizz\Traits\DestroyTrait;
+use Smswizz\Traits\StoreTrait;
 use Smswizz\Traits\UidFindableTrait;
+use Smswizz\Traits\UpdateTrait;
 
 class Group extends AbstractModel implements \JsonSerializable
 {
     use UidFindableTrait;
     use CampaignsTrait;
+    use StoreTrait;
+    use UpdateTrait;
+    use DestroyTrait;
     const VERSION = 'v1';
     const MODEL = 'group';
     const MODELS = 'groups';
@@ -29,8 +35,10 @@ class Group extends AbstractModel implements \JsonSerializable
      * @param int|null $id
      * @param null|string $uid
      * @param string $name
+     * @param Carbon|null $created_at
+     * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, string $name, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, string $name, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->name = $name;
@@ -38,7 +46,7 @@ class Group extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['name'], new Carbon($row['created_at']), new Carbon($row['updated_at']));
+        return new self($row['id'], $row['uid'], $row['name'], new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
 
     /**
@@ -53,5 +61,13 @@ class Group extends AbstractModel implements \JsonSerializable
         return [
             'name'           => $this->name
         ];
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 }

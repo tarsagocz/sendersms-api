@@ -39,10 +39,10 @@ class AutoReply extends AbstractModel implements \JsonSerializable
      * @param string $value
      * @param string $condition
      * @param string $text
-     * @param Carbon $created_at
-     * @param Carbon $updated_at
+     * @param Carbon|null $created_at
+     * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, ?int $campaign_id, string $value, string $condition, string $text, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, ?int $campaign_id, string $value, string $condition, string $text, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->campaign_id = $campaign_id;
@@ -53,7 +53,7 @@ class AutoReply extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], null, $row['campaign_id'], $row['value'], $row['condition'], $row['text'], new Carbon($row['created_at']), new Carbon($row['updated_at']));
+        return new self($row['id'], null, $row['campaign_id'], $row['value'], $row['condition'], $row['text'], new Carbon($row['created_at']), new Carbon($row['updated_at']), null);
     }
 
     /**

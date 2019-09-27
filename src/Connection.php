@@ -55,4 +55,23 @@ class Connection
     {
         return self::getClient()->get($uri);
     }
+
+    public static function post($uri, $data)
+    {
+        return self::getClient()->post($uri, [
+            'json' => $data
+        ]);
+    }
+
+    public static function patch($uri, $data)
+    {
+        return self::getClient()->patch($uri, [
+            'json' => $data
+        ]);
+    }
+
+    public static function delete($uri)
+    {
+        return self::getClient()->delete($uri);
+    }
 }

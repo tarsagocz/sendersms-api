@@ -27,15 +27,15 @@ class AbstractModel
      */
     protected $uid;
     /**
-     * @var Carbon
+     * @var Carbon|null
      */
     protected $created_at;
     /**
-     * @var Carbon
+     * @var Carbon|null
      */
     protected $updated_at;
 
-    public function __construct(?int $id, ?string $uid, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         $this->id = $id;
         $this->uid = $uid;

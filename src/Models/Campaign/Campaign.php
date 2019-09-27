@@ -98,10 +98,10 @@ class Campaign extends AbstractModel implements \JsonSerializable
      * @param string $status
      * @param string $type
      * @param int|null $group_id
-     * @param Carbon $created_at
-     * @param Carbon $updated_at
+     * @param Carbon|null $created_at
+     * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, ?string $reference_id, ?Carbon $send_at, string $name, ?Carbon $finished_at, ?Carbon $ended_at, ?string $optout_type, ?string $optout_url, ?string $text, string $status, string $type, ?int $group_id, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, ?string $reference_id, ?Carbon $send_at, string $name, ?Carbon $finished_at, ?Carbon $ended_at, ?string $optout_type, ?string $optout_url, ?string $text, string $status, string $type, ?int $group_id, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->reference_id = $reference_id;
@@ -119,7 +119,7 @@ class Campaign extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['reference_id'], is_null($row['send_at']) ? null : new Carbon($row['send_at']), $row['name'], is_null($row['finished_at']) ? null : new Carbon($row['finished_at']), is_null($row['ended_at']) ? null : new Carbon($row['ended_at']), $row['optout_type'], $row['optout_url'], $row['text'], $row['status'], $row['type'], $row['group_id'], new Carbon($row['created_at']), new Carbon($row['updated_at']));
+        return new self($row['id'], $row['uid'], $row['reference_id'], is_null($row['send_at']) ? null : new Carbon($row['send_at']), $row['name'], is_null($row['finished_at']) ? null : new Carbon($row['finished_at']), is_null($row['ended_at']) ? null : new Carbon($row['ended_at']), $row['optout_type'], $row['optout_url'], $row['text'], $row['status'], $row['type'], $row['group_id'], new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
     /**
      * Specify data which should be serialized to JSON

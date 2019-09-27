@@ -60,10 +60,10 @@ class Subscriber extends AbstractModel implements \JsonSerializable
      * @param Carbon|null $optouted_at
      * @param Carbon|null $optouting_at
      * @param null|string $reference_id
-     * @param Carbon $created_at
-     * @param Carbon $updated_at
+     * @param Carbon|null $created_at
+     * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, string $prefix, string $phone, string $created_by, ?Carbon $optouted_at, ?Carbon $optouting_at, ?string $reference_id, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, string $prefix, string $phone, string $created_by, ?Carbon $optouted_at, ?Carbon $optouting_at, ?string $reference_id, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->prefix = $prefix;
@@ -99,6 +99,6 @@ class Subscriber extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['prefix'], $row['phone'], $row['created_by'], is_null($row['optouted_at']) ? null : new Carbon($row['optouted_at']), is_null($row['optouting_at']) ? null : new Carbon($row['optouting_at']), $row['reference_id'], new Carbon($row['created_at']), new Carbon($row['updated_at']));
+        return new self($row['id'], $row['uid'], $row['prefix'], $row['phone'], $row['created_by'], is_null($row['optouted_at']) ? null : new Carbon($row['optouted_at']), is_null($row['optouting_at']) ? null : new Carbon($row['optouting_at']), $row['reference_id'], new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
 }

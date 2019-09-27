@@ -47,12 +47,12 @@ class Server extends AbstractModel implements \JsonSerializable
      * @param string $provider
      * @param int $sms_per_second
      * @param array $data
-     * @param Carbon $created_at
-     * @param Carbon $updated_at
+     * @param Carbon|null $created_at
+     * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, string $name, string $provider, int $sms_per_second, array $data, Carbon $created_at, Carbon $updated_at)
+    public function __construct(?int $id, ?string $uid, string $name, string $provider, int $sms_per_second, array $data, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
-        parent::__construct($id, $uid, $created_at, $updated_at);
+        parent::__construct($id, $uid, $created_at, $updated_at, $deleted_at);
         $this->name = $name;
         $this->provider = $provider;
         $this->sms_per_second = $sms_per_second;
@@ -61,7 +61,7 @@ class Server extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['name'], $row['provider'], $row['sms_per_second'], $row['data'] == '' ? [] : json_decode($row['data'], true), new Carbon($row['created_at']), new Carbon($row['updated_at']));
+        return new self($row['id'], $row['uid'], $row['name'], $row['provider'], $row['sms_per_second'], $row['data'] == '' ? [] : json_decode($row['data'], true), new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
 
     /**
