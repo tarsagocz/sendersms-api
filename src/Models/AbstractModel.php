@@ -34,6 +34,10 @@ class AbstractModel
      * @var Carbon|null
      */
     protected $updated_at;
+    /**
+     * @var Carbon|null
+     */
+    protected $deleted_at;
 
     public function __construct(?int $id, ?string $uid, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
@@ -41,6 +45,7 @@ class AbstractModel
         $this->uid = $uid;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
+        $this->deleted_at = $deleted_at;
     }
 
     public static function params($params = [])
@@ -74,5 +79,52 @@ class AbstractModel
     public static function count($params = [])
     {
         return json_decode(static::method(self::COUNT_METHOD, $params), true)['count'];
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __get($name)
+    {
+        if ($this->__isset($name)) {
+            return $this->$name;
+        }
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __set($name, $value)
+    {
+        if ($this->__isset($name)) {
+            $this->$name = $value;
+        }
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     * @throws \Exception
+     */
+    public function set($name, $value)
+    {
+        if ($this->__isset($name)) {
+            $this->$name = $value;
+        }
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return property_exists(static::class, $name);
     }
 }

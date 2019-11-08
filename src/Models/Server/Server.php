@@ -10,14 +10,20 @@ use Carbon\Carbon;
 use Smswizz\Models\AbstractModel;
 use Smswizz\Models\Campaign\CampaignsTrait;
 use Smswizz\Models\Message\MessagesTrait;
+use Smswizz\Traits\DestroyTrait;
 use Smswizz\Traits\ReferenceIdFindableTrait;
+use Smswizz\Traits\StoreTrait;
 use Smswizz\Traits\UidFindableTrait;
+use Smswizz\Traits\UpdateTrait;
 
 class Server extends AbstractModel implements \JsonSerializable
 {
     use UidFindableTrait;
     use MessagesTrait;
     use CampaignsTrait;
+    use StoreTrait;
+    use UpdateTrait;
+    use DestroyTrait;
     const VERSION = 'v1';
     const MODEL = 'server';
     const MODELS = 'servers';
@@ -50,7 +56,7 @@ class Server extends AbstractModel implements \JsonSerializable
      * @param Carbon|null $created_at
      * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, string $name, string $provider, int $sms_per_second, array $data, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
+    public function __construct(?int $id, ?string $uid, string $name, string $provider, int $sms_per_second = 100, array $data = [], ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at, $deleted_at);
         $this->name = $name;
@@ -61,7 +67,7 @@ class Server extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['name'], $row['provider'], $row['sms_per_second'], $row['data'] == '' ? [] : json_decode($row['data'], true), new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
+        return new self($row['id'], $row['uid'], $row['name'], $row['provider'], $row['sms_per_second'], $row['data'] == '' ? [] : $row['data'], new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
 
     /**
