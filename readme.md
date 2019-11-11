@@ -13,10 +13,10 @@
 ### Basic
 Model | Get | Count | Store | Update | Destroy
 ----- | --- | ----- | ----- | ------ | -------
-Campaign | 
-Group |
-Message |
-Server |
-Subscriber |
+Campaign | :white_check_mark:|:white_check_mark:
+Group |:white_check_mark:|:white_check_mark:
+Message |:white_check_mark:|:white_check_mark:| | :no_entry_sign:|
+Server |:white_check_mark:|:white_check_mark:
+Subscriber |:white_check_mark:|:white_check_mark:
 
 ### Relations

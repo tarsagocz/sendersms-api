@@ -156,6 +156,7 @@ class Campaign extends AbstractModel implements \JsonSerializable
         }
         return $this->auto_replies;
     }
+
     public function autoRepliesCount($params = [], $refresh = false)
     {
         if (is_null($this->auto_replies_count) || $refresh) {

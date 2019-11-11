@@ -8,4 +8,5 @@ namespace Smswizz\Models\Subscriber;
 
 class SubscriberCreatedByEnumeration
 {
+    const REMOTE_API = 'remote-api';
 }
