@@ -80,7 +80,6 @@ class Server extends AbstractModel implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id'             => $this->id,
             'name'           => $this->name,
             'provider'       => $this->provider,
             'sms_per_second' => $this->sms_per_second,

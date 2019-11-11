@@ -7,10 +7,12 @@
 namespace Smswizz\Models\Message;
 
 use Carbon\Carbon;
+use Smswizz\Connection;
 use Smswizz\Models\AbstractModel;
 use Smswizz\Models\Campaign\CampaignTrait;
 use Smswizz\Models\Server\ServerTrait;
 use Smswizz\Models\Subscriber\SubscriberTrait;
+use Smswizz\Traits\StoreTrait;
 use Smswizz\Traits\UidFindableTrait;
 
 class Message extends AbstractModel implements \JsonSerializable
@@ -19,11 +21,10 @@ class Message extends AbstractModel implements \JsonSerializable
     use SubscriberTrait;
     use ServerTrait;
     use CampaignTrait;
-
+    use StoreTrait;
     const VERSION = 'v1';
     const MODEL = 'message';
     const MODELS = 'messages';
-
     /**
      * @var int|null
      */
@@ -57,7 +58,7 @@ class Message extends AbstractModel implements \JsonSerializable
      */
     protected $provider_id;
     /**
-     * @var string|null
+     * @var []|null
      */
     protected $raw;
 
@@ -73,11 +74,11 @@ class Message extends AbstractModel implements \JsonSerializable
      * @param string $status
      * @param Carbon|null $accomplished_at
      * @param null|string $provider_id
-     * @param null|string $raw
+     * @param null|[] $raw
      * @param Carbon|null $created_at
      * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, ?int $subscriber_id, ?int $campaign_id, ?int $server_id, string $text, string $type, string $status, ?Carbon $accomplished_at, ?string $provider_id, ?string $raw, ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
+    public function __construct(?int $id, ?string $uid, ?int $subscriber_id, ?int $campaign_id = null, ?int $server_id, string $text, string $type, string $status, ?Carbon $accomplished_at = null, ?string $provider_id = null, ?array $raw = [], ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->subscriber_id = $subscriber_id;
@@ -95,7 +96,7 @@ class Message extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['subscriber_id'], $row['campaign_id'], $row['server_id'], $row['text'], $row['type'], $row['status'], is_null($row['accomplished_at']) ? null : new Carbon($row['accomplished_at']), $row['provider_id'], json_decode($row['raw'], true), new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
+        return new self($row['id'], $row['uid'], $row['subscriber_id'], $row['campaign_id'], $row['server_id'], $row['text'], $row['type'], $row['status'], is_null($row['accomplished_at']) ? null : new Carbon($row['accomplished_at']), $row['provider_id'], unserialize($row['raw']), new Carbon($row['created_at']), new Carbon($row['updated_at']), null);
     }
 
     /**
@@ -112,11 +113,23 @@ class Message extends AbstractModel implements \JsonSerializable
             'campaign_id'     => $this->campaign_id,
             'server_id'       => $this->server_id,
             'text'            => $this->text,
-            'type'            => $this->type,
-            'status'          => $this->status,
-            'accomplished_at' => $this->accomplished_at,
-            'provider_id'     => $this->provider_id,
-            'raw'             => $this->raw
+            'type'            => $this->type
         ];
+    }
+
+    public static function send($prefix, $phone, $text, $server_id, $campaign_id = null)
+    {
+        $result = json_decode(Connection::post(static::VERSION . '/' . static::MODEL . '/send', [
+            'prefix'      => $prefix,
+            'phone'       => $phone,
+            'text'        => $text,
+            'server_id'   => $server_id,
+            'campaign_id' => $campaign_id
+        ])
+            ->getBody()
+            ->getContents(), true);
+        $result[static::MODEL] = static::create($result[static::MODEL]);
+
+        return $result;
     }
 }
