@@ -78,7 +78,7 @@ class Message extends AbstractModel implements \JsonSerializable
      * @param Carbon|null $created_at
      * @param Carbon|null $updated_at
      */
-    public function __construct(?int $id, ?string $uid, ?int $subscriber_id, ?int $campaign_id = null, ?int $server_id, string $text, string $type, string $status, ?Carbon $accomplished_at = null, ?string $provider_id = null, ?array $raw = [], ?Carbon $created_at = null, ?Carbon $updated_at = null, ?Carbon $deleted_at = null)
+    public function __construct(?int $id, ?string $uid, ?int $subscriber_id, ?int $campaign_id = null, ?int $server_id, string $text, string $type, string $status, ?Carbon $accomplished_at = null, ?string $provider_id = null, ?array $raw = [], ?Carbon $created_at = null, ?Carbon $updated_at = null)
     {
         parent::__construct($id, $uid, $created_at, $updated_at);
         $this->subscriber_id = $subscriber_id;
@@ -96,7 +96,8 @@ class Message extends AbstractModel implements \JsonSerializable
 
     public static function create($row)
     {
-        return new self($row['id'], $row['uid'], $row['subscriber_id'], $row['campaign_id'], $row['server_id'], $row['text'], $row['type'], $row['status'], is_null($row['accomplished_at']) ? null : new Carbon($row['accomplished_at']), $row['provider_id'], unserialize($row['raw']), new Carbon($row['created_at']), new Carbon($row['updated_at']), null);
+        $raw = unserialize($row['raw']);
+        return new self($row['id'], $row['uid'], $row['subscriber_id'], $row['campaign_id'], $row['server_id'], $row['text'], $row['type'], $row['status'], is_null($row['accomplished_at']) ? null : new Carbon($row['accomplished_at']), $row['provider_id'], $raw, new Carbon($row['created_at']), new Carbon($row['updated_at']));
     }
 
     /**
