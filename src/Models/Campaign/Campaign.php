@@ -7,6 +7,7 @@
 namespace Smswizz\Models\Campaign;
 
 use Carbon\Carbon;
+use Smswizz\Connection;
 use Smswizz\Models\AbstractModel;
 use Smswizz\Models\Group\GroupTrait;
 use Smswizz\Models\Message\MessagesTrait;
@@ -72,12 +73,10 @@ class Campaign extends AbstractModel implements \JsonSerializable
      * @var int|null
      */
     protected $group_id;
-
     /**
      * @var null|AutoReply[]
      */
     protected $auto_replies = null;
-
     /**
      * @var null|int
      */
@@ -121,6 +120,7 @@ class Campaign extends AbstractModel implements \JsonSerializable
     {
         return new self($row['id'], $row['uid'], $row['reference_id'], is_null($row['send_at']) ? null : new Carbon($row['send_at']), $row['name'], is_null($row['finished_at']) ? null : new Carbon($row['finished_at']), is_null($row['ended_at']) ? null : new Carbon($row['ended_at']), $row['optout_type'], $row['optout_url'], $row['text'], $row['status'], $row['type'], $row['group_id'], new Carbon($row['created_at']), new Carbon($row['updated_at']), is_null($row['deleted_at']) ? null : new Carbon($row['deleted_at']));
     }
+
     /**
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -149,11 +149,14 @@ class Campaign extends AbstractModel implements \JsonSerializable
     {
         if (is_null($this->auto_replies) || $refresh) {
             $this->auto_replies = [];
-            $array = json_decode($this->hasMany('get', AutoReply::MODELS, $params)->getBody()->getContents(), true)['auto_replies'];
+            $array = json_decode($this->hasMany('get', AutoReply::MODELS, $params)
+                ->getBody()
+                ->getContents(), true)['auto_replies'];
             foreach ($array as $row) {
                 $this->auto_replies[] = AutoReply::create($row);
             }
         }
+
         return $this->auto_replies;
     }
 
@@ -162,6 +165,21 @@ class Campaign extends AbstractModel implements \JsonSerializable
         if (is_null($this->auto_replies_count) || $refresh) {
             $this->auto_replies_count = $this->hasManyCount(AutoReply::MODELS, $params);
         }
+
         return $this->auto_replies_count;
+    }
+
+    public function addSubscriber($prefix, $phone, $reference_id)
+    {
+        $result = json_decode(Connection::post(static::VERSION . '/' . static::MODEL . '/uid/' . $this->uid . '/add-subscriber', [
+            'prefix'       => $prefix,
+            'phone'        => $phone,
+            'reference_id' => $reference_id
+        ])
+            ->getBody()
+            ->getContents(), true);
+        $result[static::MODEL] = static::create($result[static::MODEL]);
+
+        return $result;
     }
 }
